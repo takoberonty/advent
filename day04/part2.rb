@@ -1,16 +1,9 @@
-# Part 1
-# Split first line for numbers
-# Add each board to 2D array with tuple for flag
-# After 4 numbers, check each row and column for a bingo
-# sum all unmarked numbers then multiply by final number for score
-
-def part1()
+def part2()
   # data = 'sample.dat'
   data = 'input.dat'
 
   numbers = []
   cards = [] # [card [row [column]]]
-  grid = 5
 
   # Build Data
   file = File.open(data)
@@ -40,20 +33,36 @@ def part1()
   end
   file.close
 
+  card_track = []
+  for i in 1..cards.length
+    card_track << false
+  end
   numbers.each do |number|
     # Mark
-    cards.each do |card|
+    cards.each_with_index do |card, index|
+      next if card_track[index]
+
       card.each do |row|
         row.each do |column|
           if column[:number] == number
             column[:marker] = true
-            return if bingo?(card, number)
+            score = bingo?(card, number)
+            if score > 0
+              # puts "Bingo on card #{index}"
+              card_track[index] = true
+              if (card_track.all? {|c| c == true})
+                puts "Worst Score: #{score}"
+                return
+              end
+
+              break
+            end
           end
         end
+        break if card_track[index]
       end
     end
   end
-  # puts cards
 end
 
 def bingo?(card, number)
@@ -81,7 +90,7 @@ def bingo?(card, number)
   end
 
   if row_bingo || col_bingo
-    puts "bingo! #{number}"
+    # puts "bingo! #{number}"
     score = 0
 
     card.each do |row|
@@ -91,11 +100,11 @@ def bingo?(card, number)
     end
     score *= number
 
-    puts "score: #{score}"
-    return true
+    # puts "score: #{score}"
+    return score
   end
 
-  return false
+  return 0
 end
 
 part2()
