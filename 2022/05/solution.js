@@ -2,31 +2,56 @@ const fs = require("fs");
 
 const lines = fs.readFileSync("input.dat", "utf8").split("\n");
 
-function part1() {
-	// const stacks = {
-	// 	1: ["Z", "N"],
-	// 	2: ["M", "C", "D"],
-	// 	3: ["P"],
-	// 	4: [],
-	// 	5: [],
-	// 	6: [],
-	// 	7: [],
-	// 	8: [],
-	// 	9: [],
-	// };
-	const stacks = {
-		1: ["S", "C", "V", "N"],
-		2: ["Z", "M", "J", "H", "N", "S"],
-		3: ["M", "C", "T", "G", "J", "N", "D"],
-		4: ["T", "D", "F", "J", "W", "R", "M"],
-		5: ["P", "F", "H"],
-		6: ["C", "T", "Z", "H", "J"],
-		7: ["D", "P", "R", "Q", "F", "S", "L", "Z"],
-		8: ["C", "S", "L", "H", "D", "F", "P", "W"],
-		9: ["D", "S", "M", "P", "F", "N", "G", "Z"],
-	};
+function parseStacks() {
+	let rawStacks;
+	const stacks = {};
+	let commands;
 
-	lines.forEach((line) => {
+	for (let i = 0; i < lines.length; i++) {
+		if (lines[i].trim() === "") {
+			rawStacks = lines.slice(0, i);
+			commands = lines.slice(i + 1);
+		}
+	}
+
+	for (let i = rawStacks.length - 1; i >= 0; i--) {
+		if (i === rawStacks.length - 1) {
+			rawStacks[i].split("   ").forEach((stack) => {
+				stacks[stack.trim()] = [];
+			});
+		} else {
+			// remove all whitespace
+			const values = [];
+			for (let j = 0; j < rawStacks[i].length; j += 4) {
+				const value = rawStacks[i]
+					.slice(j, j + 3)
+					.trim()
+					.replace("[", "")
+					.replace("]", "");
+				values.push(value || "");
+			}
+
+			for (let j = 0; j < values.length; j++) {
+				const key = (j + 1).toString();
+				if (!stacks[key]) {
+					continue;
+				}
+
+				if (values[j] !== "") {
+					stacks[key].push(values[j]);
+				}
+			}
+		}
+	}
+
+	console.log([stacks, commands]);
+	return [stacks, commands];
+}
+
+function part1() {
+	const [stacks, commands] = parseStacks(lines);
+
+	commands.forEach((line) => {
 		// move 1 from 2 to 3
 		const command = line.split(" ");
 		const count = Number(command[1]);
@@ -46,30 +71,9 @@ function part1() {
 
 // Keep order
 function part2() {
-	// const stacks = {
-	// 	1: ["Z", "N"],
-	// 	2: ["M", "C", "D"],
-	// 	3: ["P"],
-	// 	4: [],
-	// 	5: [],
-	// 	6: [],
-	// 	7: [],
-	// 	8: [],
-	// 	9: [],
-	// };
-	const stacks = {
-		1: ["S", "C", "V", "N"],
-		2: ["Z", "M", "J", "H", "N", "S"],
-		3: ["M", "C", "T", "G", "J", "N", "D"],
-		4: ["T", "D", "F", "J", "W", "R", "M"],
-		5: ["P", "F", "H"],
-		6: ["C", "T", "Z", "H", "J"],
-		7: ["D", "P", "R", "Q", "F", "S", "L", "Z"],
-		8: ["C", "S", "L", "H", "D", "F", "P", "W"],
-		9: ["D", "S", "M", "P", "F", "N", "G", "Z"],
-	};
+	const [stacks, commands] = parseStacks(lines);
 
-	lines.forEach((line) => {
+	commands.forEach((line) => {
 		// move 1 from 2 to 3
 		const command = line.split(" ");
 		const count = Number(command[1]);
@@ -90,4 +94,4 @@ function part2() {
 }
 
 part1();
-part2();
+part2(); // QNDWLMGNS

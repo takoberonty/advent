@@ -9,7 +9,7 @@ const fs = require("fs");
 
 const lines = fs.readFileSync("input.dat", "utf8").split("\n");
 
-function part1(length) {
+function part1(length = 4) {
 	let sequence = [];
 	for (let i = 0; i < lines[0].length; i++) {
 		sequence.push(lines[0][i]);
@@ -36,5 +36,5 @@ function part2() {
 	part1(14);
 }
 
-part1(4);
+part1();
 part2();
