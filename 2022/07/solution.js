@@ -6,7 +6,6 @@ const lines = fs.readFileSync("input.dat", "utf8").split("\n");
 // What is the sum of the total sizes of those directories?
 function part1() {
 	let total = 0;
-	let current = 0;
 	let path = [];
 	let paths = {};
 	lines.forEach((line) => {
@@ -19,11 +18,10 @@ function part1() {
 				path.push(line.split(" ")[2]);
 			}
 		} else if (line.startsWith("$ ls")) {
-			// current = 0;
+			return;
 		} else if (line.startsWith("dir ")) {
 			return;
 		} else {
-			// current += parseInt(line.split(" ")[0]);
 			const size = parseInt(line.split(" ")[0]);
 			let p = "";
 			path.forEach((dir) => {
