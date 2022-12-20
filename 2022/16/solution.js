@@ -50,12 +50,18 @@ function part1() {
 		let currentPressure = pressure;
 		let currentOpen = open.slice();
 		let currentPath = [...path, currentValve];
-		let currentWander = wander || [];
+		let currentWander = wander.slice();
 		let choices = [];
 
 		// We should never hit maxDepth if we are detecting loops correctly
 		const maxDepth = Object.keys(valves).length * 2;
-		if (open.length === maxValves.length || currentPath.length > maxDepth) {
+		const maxWander = Object.keys(valves).length;
+
+		if (
+			open.length === maxValves.length ||
+			currentPath.length >= maxDepth ||
+			currentWander.length >= maxWander
+		) {
 			return {
 				valve,
 				time: currentTime,
@@ -97,12 +103,143 @@ function part1() {
 
 		if (currentTime > 0) {
 			currentTime--;
-			valves[currentValve].tunnels.forEach((tunnel) => {
-				// const loopy = currentWander.includes(tunnel);
-				// if (!loopy) {
+
+			// let tunnels = [];
+
+			/*
+			// if all are open then try each one
+			if (
+				valves[currentValve].tunnels.every((tunnel) =>
+					currentOpen.includes(tunnel)
+				)
+			) {
+				tunnels = valves[currentValve].tunnels;
+			} else {
+				tunnels.push(
+					...valves[currentValve].tunnels
+						.filter((tunnel) => !currentOpen.includes(tunnel))
+						.map((tunnel) => {
+							return {
+								tunnel,
+								rate: valves[tunnel].rate,
+							};
+						})
+						.filter((tunnel) => tunnel.rate > 0)
+						.map((tunnel) => tunnel.tunnel)
+				);
+			}
+
+			if (tunnels.length === 0) {
+				tunnels.push(
+					...valves[currentValve].tunnels
+						.map((tunnel) => {
+							const potential = valves[tunnel].tunnels.reduce((acc, t) => {
+								if (!currentOpen.includes(t)) {
+									acc += valves[t].rate;
+								}
+								return acc;
+							}, 0);
+							return {
+								tunnel,
+								potential,
+							};
+						})
+						.sort((a, b) => b.potential - a.potential)
+						.map((tunnel) => tunnel.tunnel)
+						.slice(0, 3)
+				);
+			}
+
+			tunnels.filter(Boolean).forEach((tunnel) => {
 				const previous =
 					currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
 				if (currentWander.length === 0 || tunnel !== previous) {
+					const result = search({
+						valve: tunnel,
+						time: currentTime,
+						pressure: currentPressure,
+						open: currentOpen,
+						path: currentPath,
+						wander: currentWander,
+					});
+
+					if (result) {
+						choices.push(result);
+					}
+				}
+			});
+            */
+
+			/*
+			valves[currentValve].tunnels.forEach((tunnel) => {
+				// This is the fastest, but doesn't work
+				// const loopy = currentWander.includes(tunnel);
+				// if (!loopy) {
+				// This doesn't seem to work
+				// const loopy = currentWander.slice(-2, -1).includes(tunnel);
+				// if (!loopy) {
+
+				// This is the slowest, but works
+				const previous =
+					currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
+				if (currentWander.length === 0 || tunnel !== previous) {
+					// Nope
+					// console.log(currentWander);
+					// const loopy = currentWander.slice(0, -1).includes(tunnel);
+					// const previous =
+					// 	currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
+					// if ((currentWander.length === 0 || tunnel !== previous) && !loopy) {
+
+					// Nope - off by 1
+					// const previous =
+					// 	currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
+					// if (
+					// 	currentWander.length === 0 ||
+					// 	(currentPath.length < maxValves * 2 && tunnel !== previous)
+					// ) {
+					const result = search({
+						valve: tunnel,
+						time: currentTime,
+						pressure: currentPressure,
+						open: currentOpen,
+						path: currentPath,
+						wander: currentWander,
+					});
+
+					if (result) {
+						choices.push(result);
+					}
+				}
+			});
+            */
+
+			valves[currentValve].tunnels.forEach((tunnel) => {
+				// This is the fastest, but doesn't work
+				const loopy = currentWander.includes(tunnel);
+				if (!loopy) {
+					// This doesn't seem to work
+					// const loopy = currentWander.slice(-2, -1).includes(tunnel);
+					// if (!loopy) {
+
+					// This is the slowest, but works
+					// const previous =
+					// 	currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
+					// if (currentWander.length === 0 || tunnel !== previous) {
+
+					// Nope
+					// console.log(currentWander);
+					// const loopy = currentWander.slice(0, -1).includes(tunnel);
+					// const previous =
+					// 	currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
+					// if ((currentWander.length === 0 || tunnel !== previous) && !loopy) {
+
+					// Nope - off by 1
+					// const previous =
+					// 	currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
+					// if (
+					// 	currentWander.length === 0 ||
+					// 	(currentPath.length < maxValves * 2 && tunnel !== previous)
+					// ) {
 					const result = search({
 						valve: tunnel,
 						time: currentTime,
