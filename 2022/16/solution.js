@@ -35,6 +35,7 @@ function part1() {
 	console.log("valves", valves);
 
 	const maxValves = Object.keys(valves).filter((v) => valves[v].rate > 0);
+	let maxPressure = 0;
 
 	const search = ({
 		valve,
@@ -214,44 +215,34 @@ function part1() {
             */
 
 			valves[currentValve].tunnels.forEach((tunnel) => {
-				// This is the fastest, but doesn't work
 				const loopy = currentWander.includes(tunnel);
-				if (!loopy) {
-					// This doesn't seem to work
-					// const loopy = currentWander.slice(-2, -1).includes(tunnel);
-					// if (!loopy) {
+				if (loopy) {
+					return;
+				}
 
-					// This is the slowest, but works
-					// const previous =
-					// 	currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
-					// if (currentWander.length === 0 || tunnel !== previous) {
+				const potentialPressure =
+					currentPressure +
+					Object.keys(valves).reduce((a, b) => {
+						if (!currentOpen.includes(b)) {
+							return a + valves[b].rate;
+						}
+						return a;
+					}, 0);
+				if (potentialPressure < maxPressure) {
+					return;
+				}
 
-					// Nope
-					// console.log(currentWander);
-					// const loopy = currentWander.slice(0, -1).includes(tunnel);
-					// const previous =
-					// 	currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
-					// if ((currentWander.length === 0 || tunnel !== previous) && !loopy) {
+				const result = search({
+					valve: tunnel,
+					time: currentTime,
+					pressure: currentPressure,
+					open: currentOpen,
+					path: currentPath,
+					wander: currentWander,
+				});
 
-					// Nope - off by 1
-					// const previous =
-					// 	currentPath.length > 1 ? currentPath[currentPath.length - 2] : null;
-					// if (
-					// 	currentWander.length === 0 ||
-					// 	(currentPath.length < maxValves * 2 && tunnel !== previous)
-					// ) {
-					const result = search({
-						valve: tunnel,
-						time: currentTime,
-						pressure: currentPressure,
-						open: currentOpen,
-						path: currentPath,
-						wander: currentWander,
-					});
-
-					if (result) {
-						choices.push(result);
-					}
+				if (result) {
+					choices.push(result);
 				}
 			});
 		}
@@ -264,7 +255,13 @@ function part1() {
 			path: currentPath,
 		});
 
-		return choices.filter(Boolean).sort((a, b) => b.pressure - a.pressure)[0];
+		const best = choices
+			.filter(Boolean)
+			.sort((a, b) => b.pressure - a.pressure)[0];
+		if (best.pressure > maxPressure) {
+			maxPressure = best.pressure;
+			return best;
+		}
 	};
 
 	const best = search({
